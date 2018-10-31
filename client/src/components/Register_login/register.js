@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import FormField from '../utils/Form/formField';
 import{ update, generateData, isFormValid } from '../utils/Form/formActions';
-import { loginUser } from '../../actions/userActions';
+import { registerUser, loginUser } from '../../actions/userActions';
 
 class Register extends Component {
 
     state = {
         formError: false,
-        formSuccess: '',
+        formSuccess: false,
         formData: {
             name: {
                 element: 'input',
@@ -103,7 +104,23 @@ class Register extends Component {
         let dataToSubmit = generateData(this.state.formData, 'register');
         let formIsValid = isFormValid(this.state.formData, 'register');
         if (formIsValid) {
-            console.log(dataToSubmit);
+            this.props.registerUser(dataToSubmit)
+            .then(response => {
+                if (response.payload.success) {                    
+                    // login the new user
+                   this.props.loginUser(dataToSubmit)
+                    // Redirect to dashboard
+                    .then(() => {
+                        this.props.history.push('/user/dashboard');
+                    });
+                } else {
+                    console.log("ERROR", response.payload);
+                    this.setState((prevState, props) => ({ formError: true }))
+                }
+            }).catch(e => {
+                console.log("ERROR", e);
+                this.setState((prevState, props) => ({formError: true }))
+            });
         } else {
             this.setState({
                 formError: true
@@ -171,10 +188,15 @@ class Register extends Component {
                             </form>
                         </div>
                     </div>
-                </div>
+                </div>                
+
             </div>
         );
     }
 }
 
-export default connect()(Register);
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({ registerUser, loginUser }, dispatch);
+}
+
+export default connect(null, mapDispatchToProps)(Register);
