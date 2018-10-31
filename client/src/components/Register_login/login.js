@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { connect  } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import FormField from '../utils/Form/formField';
 import{ update, generateData, isFormValid } from '../utils/Form/formActions';
@@ -59,7 +60,7 @@ class Login extends Component {
         let formIsValid = isFormValid(this.state.formData, 'login');
         if (formIsValid) {
             console.log("VALID");
-            this.props.dispatch(loginUser(dataToSubmit))
+            this.props.loginUser(dataToSubmit)
             .then(res => {
                 if (res.payload.loginSuccess){
                     console.log(res.payload);
@@ -106,5 +107,10 @@ class Login extends Component {
     }
 }
 
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators({ loginUser }, dispatch);
+}
 
-export default connect()(withRouter(Login));
+
+
+export default connect(null, mapDispatchToProps)(withRouter(Login));
