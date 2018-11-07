@@ -89,7 +89,7 @@ app.post('/api/product/wood', auth, admin, (req, res) => {
     .catch(err => res.json({success: false, err }));
 })
 
-app.get('/api/product/woods', (req, res) => {
+app.get('/api/product/woods', (req, res) => {   
     Wood.find()
     .then(woods => res.status(200).send(woods))
     .catch(err => res.status(400).send(err));
